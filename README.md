@@ -141,7 +141,7 @@
 #### 3. 실행 내용 및 한계 분석 (Prometheus & Grafana 활용)
 * **구현상의 오류**: 설계 당시 비동기 처리를 목표로 했으나, 실제 구현 과정에서 **Redis 분산 락(SETNX)을 활용한 직렬화 구조**로 연동되면서 의도치 않은 동기 방식 구조로 인한 병목이 발생
 * **연쇄 장애 발생 (Cascading Failure)**: 
-    - **병목의 전이**: **Prometheus 및 Grafana** 모니터링 결과, DB Lock 경합은 해소되었으나 Redis 응답을 기다리는 WebSocket 메시지 처리 스레드가 차례로 블로킹(Block)되는 현상 발견
+    - **병목의 전이**: **Prometheus 및 Grafana** 모니터링 결과, DB Lock 경합이 일부 해소되었으나 Redis 응답을 기다리는 WebSocket 메시지 처리 스레드가 차례로 블로킹(Block)되는 현상 발견 => 근본적인 해결책이 필요(비동기 구조로 재설계 등)
     - **스레드 풀 고갈**: 800여 개의 락 요청이 Redis 싱글 스레드 큐에 적체되면서 서버의 워커 스레드가 모두 소진되었고, 결국 서버가 사실상 멈추는 상태 발생 (scenarios: 800 max VUs, 7m30s max duration)
 
 #### 4. 인사이트 및 결론
